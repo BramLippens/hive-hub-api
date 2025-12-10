@@ -28,7 +28,7 @@ class CollectionItemUpdate(BaseModel):
     notes: Optional[str] = None
 
 
-class CollectionItem(CollectionItemBase):
+class CollectionItemResponse(CollectionItemBase):
     id: int
     created_at: datetime
     updated_at: Optional[datetime] = None

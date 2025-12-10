@@ -3,10 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from . import crud, models, schemas
-from .database import engine, get_db
-
-# Create database tables
-models.Base.metadata.create_all(bind=engine)
+from .database import get_db
 
 app = FastAPI(
     title="DVD Collection API",
@@ -20,14 +17,14 @@ def read_root():
     return {"message": "DVD Collection API - visit /docs for API documentation"}
 
 
-@app.get("/items/", response_model=List[schemas.CollectionItem])
+@app.get("/items/", response_model=List[schemas.CollectionItemResponse])
 def list_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     """Get all items in the collection"""
     items = crud.get_items(db, skip=skip, limit=limit)
     return items
 
 
-@app.get("/items/{item_id}", response_model=schemas.CollectionItem)
+@app.get("/items/{item_id}", response_model=schemas.CollectionItemResponse)
 def get_item(item_id: int, db: Session = Depends(get_db)):
     """Get a specific item by ID"""
     db_item = crud.get_item(db, item_id=item_id)
@@ -36,13 +33,13 @@ def get_item(item_id: int, db: Session = Depends(get_db)):
     return db_item
 
 
-@app.post("/items/", response_model=schemas.CollectionItem, status_code=201)
+@app.post("/items/", response_model=schemas.CollectionItemResponse, status_code=201)
 def create_item(item: schemas.CollectionItemCreate, db: Session = Depends(get_db)):
     """Add a new item to the collection"""
     return crud.create_item(db=db, item=item)
 
 
-@app.put("/items/{item_id}", response_model=schemas.CollectionItem)
+@app.put("/items/{item_id}", response_model=schemas.CollectionItemResponse)
 def update_item(item_id: int, item: schemas.CollectionItemUpdate, db: Session = Depends(get_db)):
     """Update an existing item"""
     db_item = crud.update_item(db, item_id=item_id, item=item)
